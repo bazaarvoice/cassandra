@@ -28,6 +28,7 @@ import org.apache.cassandra.net.IVerbHandler;
 import org.apache.cassandra.net.MessageIn;
 import org.apache.cassandra.net.MessageOut;
 import org.apache.cassandra.net.MessagingService;
+import org.apache.cassandra.utils.EmoPartitioners;
 
 public class GossipDigestSynVerbHandler implements IVerbHandler<GossipDigestSyn>
 {
@@ -53,7 +54,10 @@ public class GossipDigestSynVerbHandler implements IVerbHandler<GossipDigestSyn>
             return;
         }
 
-        if (gDigestMessage.partioner != null && !gDigestMessage.partioner.equals(DatabaseDescriptor.getPartitionerName()))
+        // EmoDB Modification:  Original line performed a direct partitioner comparison
+        // if (gDigestMessage.partioner != null && !gDigestMessage.partioner.equals(DatabaseDescriptor.getPartitionerName())
+        
+        if (gDigestMessage.partioner != null && !EmoPartitioners.areEquivalent(gDigestMessage.partioner, DatabaseDescriptor.getPartitionerName()))
         {
             logger.warn("Partitioner mismatch from " + from + " " + gDigestMessage.partioner + "!=" + DatabaseDescriptor.getPartitionerName());
             return;
